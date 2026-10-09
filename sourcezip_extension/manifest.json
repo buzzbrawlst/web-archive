@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "SourceZip — Fire Download",
+  "version": "1.0.0",
+  "description": "Package a webpage's rendered HTML and accessible loaded resources into a ZIP.",
+  "permissions": ["activeTab", "scripting", "downloads"],
+  "optional_host_permissions": ["<all_urls>"],
+  "action": {"default_title": "SourceZip", "default_popup": "popup.html"},
+  "background": {"service_worker": "background.js"}
+}
