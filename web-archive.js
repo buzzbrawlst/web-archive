@@ -184,11 +184,11 @@
       const value=raw.trim();
       if(!value || /^(?:data:|blob:|#)/i.test(value)) return whole;
       const path=localPath(value,base);
-      return path ? "url("+quote+path.split("/").pop()+quote+")" : whole;
+      return path ? "url("+quote+path+quote+")" : whole;
     }).replace(/(@import\s+(?:url\()?\s*['"]?)([^'")\s;]+)(['"]?\s*\)?\s*;?)/gi,(whole,before,raw,after)=>{
       if(/^(?:data:|blob:|#)/i.test(raw))return whole;
       const path=localPath(raw,base);
-      return path ? before+path.split("/").pop()+after : whole;
+      return path ? before+path+after : whole;
     });
     doc.querySelectorAll("[style]").forEach(el=>el.setAttribute("style",rewriteInlineCss(el.getAttribute("style")||"",target.href)));
     doc.querySelectorAll("style").forEach(el=>{el.textContent=rewriteInlineCss(el.textContent||"",target.href);});
