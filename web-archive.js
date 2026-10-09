@@ -127,6 +127,7 @@
       });
       doc.querySelectorAll("[srcset]").forEach(el=>parseSrcset(el.getAttribute("srcset")||"",target.href).forEach(v=>queueResource(v.url,"binary",target.href)));
       doc.querySelectorAll("[style]").forEach(el=>{const style=el.getAttribute("style")||"";for(const match of style.matchAll(/url\(\s*(['"]?)(.*?)\1\s*\)/gi))queueResource(match[2],"binary",target.href);});
+      doc.querySelectorAll("style").forEach(el=>{const css=el.textContent||"";for(const match of css.matchAll(/@import\s+(?:url\()?\s*['"]?([^'")\s;]+)['"]?\s*\)?/gi))queueResource(match[1],"css",target.href);for(const match of css.matchAll(/url\(\s*(['"]?)(.*?)\1\s*\)/gi))queueResource(match[2],"binary",target.href);});
     }
     log("Page HTML fetched. Found "+queue.length+" initial resource(s).");
     const maxDynamic = Math.max(limit,queue.length);
@@ -179,6 +180,18 @@
       });
       folder.file(item.path, item.text);
     }
+    const rewriteInlineCss = (css, base) => css.replace(/url\(\s*(['"]?)(.*?)\1\s*\)/gi, (whole, quote, raw) => {
+      const value=raw.trim();
+      if(!value || /^(?:data:|blob:|#)/i.test(value)) return whole;
+      const path=localPath(value,base);
+      return path ? "url("+quote+path.split("/").pop()+quote+")" : whole;
+    }).replace(/(@import\s+(?:url\()?\s*['"]?)([^'")\s;]+)(['"]?\s*\)?\s*;?)/gi,(whole,before,raw,after)=>{
+      if(/^(?:data:|blob:|#)/i.test(raw))return whole;
+      const path=localPath(raw,base);
+      return path ? before+path.split("/").pop()+after : whole;
+    });
+    doc.querySelectorAll("[style]").forEach(el=>el.setAttribute("style",rewriteInlineCss(el.getAttribute("style")||"",target.href)));
+    doc.querySelectorAll("style").forEach(el=>{el.textContent=rewriteInlineCss(el.textContent||"",target.href);});
     if($("includeAssets").checked){
       doc.querySelectorAll("script[src],img[src],source[src],video[src],audio[src],iframe[src],input[type=image][src],embed[src],track[src],link[rel~='stylesheet'][href],link[rel~='icon'][href],link[rel~='preload'][href],link[rel~='modulepreload'][href],link[rel~='manifest'][href]").forEach(el=>{
         const tag=el.tagName.toLowerCase(),attr=tag==="link"?"href":"src",raw=el.getAttribute(attr);
