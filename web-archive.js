@@ -155,6 +155,30 @@
     function localPath(raw,base=target.href){
       try{const url=new URL(raw,base);url.hash="";const item=resources.get(url.href);return item&&item.saved?item.path:null;}catch{return null;}
     }
+    // Rewrite CSS URLs/imports to local sibling files so stylesheets can resolve
+    // assets after extraction. CSS and its downloaded assets are both stored in /assets.
+    for (const item of queue) {
+      if (item.kind !== "css" || !item.saved || typeof item.text !== "string") continue;
+      const cssBase = item.url;
+      const rewriteCssUrl = (raw) => {
+        try {
+          const path = localPath(raw, cssBase);
+          return path && resources.get(new URL(raw, cssBase).href)?.saved ? path.split("/").pop() : raw;
+        } catch { return raw; }
+      };
+      item.text = item.text.replace(/url\(\s*(['"]?)(.*?)\1\s*\)/gi, (whole, quote, raw) => {
+        const trimmed = raw.trim();
+        if (!trimmed || /^(?:data:|blob:|#)/i.test(trimmed)) return whole;
+        const replacement = rewriteCssUrl(trimmed);
+        return replacement === trimmed ? whole : "url(" + quote + replacement + quote + ")";
+      });
+      item.text = item.text.replace(/(@import\s+(?:url\()?\s*['"]?)([^'")\s;]+)(['"]?\s*\)?\s*;?)/gi, (whole, before, raw, after) => {
+        if (/^(?:data:|blob:|#)/i.test(raw)) return whole;
+        const replacement = rewriteCssUrl(raw);
+        return replacement === raw ? whole : before + replacement + after;
+      });
+      folder.file(item.path, item.text);
+    }
     if($("includeAssets").checked){
       doc.querySelectorAll("script[src],img[src],source[src],video[src],audio[src],iframe[src],input[type=image][src],embed[src],track[src],link[href]").forEach(el=>{
         const tag=el.tagName.toLowerCase(),attr=tag==="link"?"href":"src",raw=el.getAttribute(attr);
