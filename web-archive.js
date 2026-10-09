@@ -116,7 +116,7 @@
       }catch{}
     }
     if($("includeAssets").checked){
-      doc.querySelectorAll("script[src],img[src],source[src],video[src],audio[src],iframe[src],input[type=image][src],embed[src],track[src],link[href]").forEach(el=>{
+      doc.querySelectorAll("script[src],img[src],source[src],video[src],audio[src],iframe[src],input[type=image][src],embed[src],track[src],link[rel~="stylesheet"][href],link[rel~="icon"][href],link[rel~="preload"][href],link[rel~="modulepreload"][href],link[rel~="manifest"][href]").forEach(el=>{
         const tag=el.tagName.toLowerCase();
         const rel=(el.getAttribute("rel")||"").toLowerCase();
         const raw=tag==="link" ? el.getAttribute("href") : el.getAttribute("src");
@@ -180,7 +180,7 @@
       folder.file(item.path, item.text);
     }
     if($("includeAssets").checked){
-      doc.querySelectorAll("script[src],img[src],source[src],video[src],audio[src],iframe[src],input[type=image][src],embed[src],track[src],link[href]").forEach(el=>{
+      doc.querySelectorAll("script[src],img[src],source[src],video[src],audio[src],iframe[src],input[type=image][src],embed[src],track[src],link[rel~="stylesheet"][href],link[rel~="icon"][href],link[rel~="preload"][href],link[rel~="modulepreload"][href],link[rel~="manifest"][href]").forEach(el=>{
         const tag=el.tagName.toLowerCase(),attr=tag==="link"?"href":"src",raw=el.getAttribute(attr);
         const path=raw&&localPath(raw,target.href);
         if(path) el.setAttribute(attr,path);
