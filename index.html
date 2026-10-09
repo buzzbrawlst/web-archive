@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#09090f"><meta name="description" content="Archive publicly accessible website files into a ZIP in your browser.">
+<title>Web Archive — Site packer</title>
+<link rel="stylesheet" href="web-archive.css">
+<script defer src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script defer src="web-archive.js"></script>
+</head>
+<body>
+<header class="top"><a class="brand" href="./"><span class="brand-mark">W</span> WEB ARCHIVE</a><span class="pill">BROWSER TOOL</span></header>
+<main>
+<section class="hero">
+<div class="eyebrow"><span class="dot"></span> SAVE THE WEB, LOCALLY</div>
+<h1>Pack a website.<br><span>Keep the files.</span></h1>
+<p class="sub">Collect publicly accessible page files and bundle them into a ZIP. Runs in your browser — no account needed.</p>
+</section>
+<section class="panel">
+<div class="panel-head"><div><div class="step">01 / SOURCE</div><h2>What do you want to archive?</h2></div><span class="chip">URL or files</span></div>
+<div class="tabs" role="tablist"><button class="tab active" id="urlTab" type="button">Website URL</button><button class="tab" id="filesTab" type="button">Local files</button></div>
+<div id="urlPane" class="pane">
+<label for="siteUrl">Website address</label>
+<div class="url-row"><input id="siteUrl" type="url" placeholder="https://example.com" autocomplete="url"><button id="startBtn" class="primary" type="button">Build ZIP <span>↗</span></button></div>
+<p class="hint">Uses a public CORS relay to try to read the page. Some websites block relays, require login, or prevent asset downloads.</p>
+</div>
+<div id="filesPane" class="pane hidden">
+<label for="fileInput">Choose files or a folder</label>
+<input id="fileInput" type="file" multiple webkitdirectory>
+<p class="hint">Your selected files are zipped locally. Nothing is uploaded.</p>
+<button id="zipFilesBtn" class="primary" type="button">Zip selected files ↗</button>
+</div>
+<div class="divider"></div>
+<div class="options">
+<div><strong>Include discovered assets</strong><small>Scripts, stylesheets, images and fonts that the browser can access.</small></div>
+<label class="switch"><input id="includeAssets" type="checkbox" checked><span></span></label>
+</div>
+<div class="options">
+<div><strong>Maximum asset count</strong><small>More assets can mean a bigger ZIP and longer wait.</small></div>
+<select id="assetLimit"><option value="20">20 files</option><option value="50" selected>50 files</option><option value="100">100 files</option></select>
+</div>
+<div id="status" class="status" aria-live="polite"><span class="status-dot"></span><span id="statusText">Ready when you are.</span></div>
+<div class="progress"><div id="progressBar"></div></div>
+<div id="log" class="log" aria-live="polite"></div>
+</section>
+<section class="bottom-grid">
+<article class="mini"><span class="mini-icon">↯</span><h3>Browser-based</h3><p>Local-file ZIPs are created on your device. URL mode depends on the remote site and relay access.</p></article>
+<article class="mini"><span class="mini-icon">⌘</span><h3>Want deeper capture?</h3><p>Use the Chrome extension to collect resources from a page already open in your browser.</p><a href="https://github.com/buzzbrawlst/web-archive/tree/main/sourcezip_extension">Get the extension ↗</a></article>
+<article class="mini"><span class="mini-icon">◈</span><h3>Know the limits</h3><p>This is not a full mirroring crawler. It cannot retrieve server code, private APIs, login-only content or files blocked by the site.</p></article>
+</section>
+</main>
+<footer>WEB ARCHIVE <span>Made for personal archiving of content you’re allowed to access.</span></footer>
+</body></html>
